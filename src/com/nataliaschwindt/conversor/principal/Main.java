@@ -1,5 +1,7 @@
 package com.nataliaschwindt.conversor.principal;
 
+import com.nataliaschwindt.conversor.servicio.ConversorService;
+
 import java.util.Scanner;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,179 +19,82 @@ public class Main {
             System.out.println("Error al leer config.properties: " + e.getMessage());
             System.exit(1);
         }
+
         Scanner scanner = new Scanner(System.in);
         double monto;
         int opcion;
 
+        ConversorService conversorService = new ConversorService(apiKey);
+
+        String[][] pares = {
+                {"ARS","RUB"}, {"ARS","USD"}, {"ARS","CNY"}, {"ARS","BRL"}, {"ARS","EUR"},
+                {"RUB","ARS"}, {"RUB","USD"}, {"RUB","CNY"}, {"RUB","BRL"}, {"RUB","EUR"},
+                {"USD","ARS"}, {"USD","RUB"}, {"USD","CNY"}, {"USD","BRL"}, {"USD","EUR"},
+                {"CNY","ARS"}, {"CNY","RUB"}, {"CNY","USD"}, {"CNY","BRL"}, {"CNY","EUR"},
+                {"BRL","ARS"}, {"BRL","RUB"}, {"BRL","USD"}, {"BRL","CNY"}, {"BRL","EUR"},
+                {"EUR","ARS"}, {"EUR","RUB"}, {"EUR","USD"}, {"EUR","CNY"}, {"EUR","BRL"}
+        };
+
+        String menu = """
+            Seleccione la opción:
+            1: Pesos Argentinos → Rublos Rusos
+            2: Pesos Argentinos → Dólares Estadounidenses
+            3: Pesos Argentinos → Yuan Chino
+            4: Pesos Argentinos → Real Brasileño
+            5: Pesos Argentinos → Euro
+            6: Rublos Rusos → Pesos Argentinos
+            7: Rublos Rusos → Dólares Estadounidenses
+            8: Rublos Rusos → Yuan Chino
+            9: Rublos Rusos → Real Brasileño
+            10: Rublos Rusos → Euro
+            11: Dólares Estadounidenses → Pesos Argentinos
+            12: Dólares Estadounidenses → Rublos Rusos
+            13: Dólares Estadounidenses → Yuan Chino
+            14: Dólares Estadounidenses → Real Brasileño
+            15: Dólares Estadounidenses → Euro
+            16: Yuan Chino → Pesos Argentinos
+            17: Yuan Chino → Rublos Rusos
+            18: Yuan Chino → Dólares Estadounidenses
+            19: Yuan Chino → Real Brasileño
+            20: Yuan Chino → Euro
+            21: Real Brasileño → Pesos Argentinos
+            22: Real Brasileño → Rublos Rusos
+            23: Real Brasileño → Dólares Estadounidenses
+            24: Real Brasileño → Yuan Chino
+            25: Real Brasileño → Euro
+            26: Euro → Pesos Argentinos
+            27: Euro → Rublos Rusos
+            28: Euro → Dólares Estadounidenses
+            29: Euro → Yuan Chino
+            30: Euro → Real Brasileño
+            31: Salir
+            """;
+
+        System.out.println("Ingrese el monto a convertir:");
+        monto = scanner.nextDouble();
+
         do {
-            System.out.println("Ingrese el monto a convertir:");
-            monto = scanner.nextDouble();
-
-            String menu = """
-                Seleccione la opción:
-                1: ARS → RUB
-                2: ARS → USD
-                3: ARS → CNY
-                4: ARS → BRL
-                5: ARS → EUR
-                6: RUB → ARS
-                7: RUB → USD
-                8: RUB → CNY
-                9: RUB → BRL
-                10: RUB → EUR
-                11: USD → ARS
-                12: USD → RUB
-                13: USD → CNY
-                14: USD → BRL
-                15: USD → EUR
-                16: CNY → ARS
-                17: CNY → RUB
-                18: CNY → USD
-                19: CNY → BRL
-                20: CNY → EUR
-                21: BRL → ARS
-                22: BRL → RUB
-                23: BRL → USD
-                24: BRL → CNY
-                25: BRL → EUR
-                26: EUR → ARS
-                27: EUR → RUB
-                28: EUR → USD
-                29: EUR → CNY
-                30: EUR → BRL
-                31: Salir
-                """;
-
             System.out.println(menu);
-
             opcion = scanner.nextInt();
 
-            switch(opcion) {
-                case 1 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/ARS/RUB";
-                    System.out.println("URL generada: " + url);
+            if (opcion >= 1 && opcion <= pares.length) {
+                String origen = pares[opcion - 1][0];
+                String destino = pares[opcion - 1][1];
+
+                try {
+                    double tasa = conversorService.obtenerTasa(origen, destino);
+                    System.out.println("Monto convertido: " + (monto * tasa));
+                } catch (IOException | InterruptedException e) {
+                    System.out.println("Error al obtener la tasa: " + e.getMessage());
                 }
-                case 2 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/ARS/USD";
-                    System.out.println("URL generada: " + url);
-                }
-                case 3 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/ARS/CNY";
-                    System.out.println("URL generada: " + url);
-                }
-                case 4 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/ARS/BRL";
-                    System.out.println("URL generada: " + url);
-                }
-                case 5 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/ARS/EUR";
-                    System.out.println("URL generada: " + url);
-                }
-                case 6 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/RUB/ARS";
-                    System.out.println("URL generada: " + url);
-                }
-                case 7 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/RUB/USD";
-                    System.out.println("URL generada: " + url);
-                }
-                case 8 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/RUB/CNY";
-                    System.out.println("URL generada: " + url);
-                }
-                case 9 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/RUB/BRL";
-                    System.out.println("URL generada: " + url);
-                }
-                case 10 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/RUB/EUR";
-                    System.out.println("URL generada: " + url);
-                }
-                case 11 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/USD/ARS";
-                    System.out.println("URL generada: " + url);
-                }
-                case 12 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/USD/RUB";
-                    System.out.println("URL generada: " + url);
-                }
-                case 13 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/USD/CNY";
-                    System.out.println("URL generada: " + url);
-                }
-                case 14 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/USD/BRL";
-                    System.out.println("URL generada: " + url);
-                }
-                case 15 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/USD/EUR";
-                    System.out.println("URL generada: " + url);
-                }
-                case 16 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/CNY/ARS";
-                    System.out.println("URL generada: " + url);
-                }
-                case 17 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/CNY/RUB";
-                    System.out.println("URL generada: " + url);
-                }
-                case 18 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/CNY/USD";
-                    System.out.println("URL generada: " + url);
-                }
-                case 19 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/CNY/BRL";
-                    System.out.println("URL generada: " + url);
-                }
-                case 20 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/CNY/EUR";
-                    System.out.println("URL generada: " + url);
-                }
-                case 21 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/BRL/ARS";
-                    System.out.println("URL generada: " + url);
-                }
-                case 22 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/BRL/RUB";
-                    System.out.println("URL generada: " + url);
-                }
-                case 23 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/BRL/USD";
-                    System.out.println("URL generada: " + url);
-                }
-                case 24 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/BRL/CNY";
-                    System.out.println("URL generada: " + url);
-                }
-                case 25 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/BRL/EUR";
-                    System.out.println("URL generada: " + url);
-                }
-                case 26 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/EUR/ARS";
-                    System.out.println("URL generada: " + url);
-                }
-                case 27 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/EUR/RUB";
-                    System.out.println("URL generada: " + url);
-                }
-                case 28 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/EUR/USD";
-                    System.out.println("URL generada: " + url);
-                }
-                case 29 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/EUR/CNY";
-                    System.out.println("URL generada: " + url);
-                }
-                case 30 -> {
-                    String url = "https://v6.exchangerate-api.com/v6/" + apiKey + "/pair/EUR/BRL";
-                    System.out.println("URL generada: " + url);
-                }
-                case 31 -> System.out.println("Saliendo del programa...");
-                default -> System.out.println("Opción inválida. Intente nuevamente.");
+
+            } else if (opcion == pares.length + 1) {
+                System.out.println("Saliendo del programa...");
+            } else {
+                System.out.println("Opción inválida. Intente nuevamente.");
             }
 
-        } while(opcion != 31);
+        } while (opcion != pares.length + 1);
 
         scanner.close();
     }
