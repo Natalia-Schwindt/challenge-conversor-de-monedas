@@ -1,5 +1,6 @@
 package com.nataliaschwindt.conversor.principal;
 
+import com.nataliaschwindt.conversor.excepcion.ConversorException;
 import com.nataliaschwindt.conversor.servicio.ConversorService;
 
 import java.util.Scanner;
@@ -27,48 +28,56 @@ public class Main {
         ConversorService conversorService = new ConversorService(apiKey);
 
         String[][] pares = {
-                {"ARS","RUB"}, {"ARS","USD"}, {"ARS","CNY"}, {"ARS","BRL"}, {"ARS","EUR"},
-                {"RUB","ARS"}, {"RUB","USD"}, {"RUB","CNY"}, {"RUB","BRL"}, {"RUB","EUR"},
-                {"USD","ARS"}, {"USD","RUB"}, {"USD","CNY"}, {"USD","BRL"}, {"USD","EUR"},
-                {"CNY","ARS"}, {"CNY","RUB"}, {"CNY","USD"}, {"CNY","BRL"}, {"CNY","EUR"},
-                {"BRL","ARS"}, {"BRL","RUB"}, {"BRL","USD"}, {"BRL","CNY"}, {"BRL","EUR"},
-                {"EUR","ARS"}, {"EUR","RUB"}, {"EUR","USD"}, {"EUR","CNY"}, {"EUR","BRL"}
+                {"ARS", "USD"},
+                {"ARS", "BRL"},
+                {"ARS", "COP"},
+                {"ARS", "CLP"},
+                {"ARS", "BOB"},
+                {"BRL", "USD"},
+                {"BRL", "ARS"},
+                {"BRL", "COP"},
+                {"BRL", "CLP"},
+                {"BRL", "BOB"},
+                {"USD", "ARS"},
+                {"USD", "BRL"},
+                {"USD", "COP"},
+                {"USD", "CLP"},
+                {"USD", "BOB"},
+                {"COP", "USD"},
+                {"COP", "ARS"},
+                {"COP", "BRL"},
+                {"CLP", "USD"},
+                {"CLP", "ARS"},
+                {"BOB", "USD"},
+                {"BOB", "ARS"}
         };
 
         String menu = """
-            Seleccione la opción:
-            1: Pesos Argentinos → Rublos Rusos
-            2: Pesos Argentinos → Dólares Estadounidenses
-            3: Pesos Argentinos → Yuan Chino
-            4: Pesos Argentinos → Real Brasileño
-            5: Pesos Argentinos → Euro
-            6: Rublos Rusos → Pesos Argentinos
-            7: Rublos Rusos → Dólares Estadounidenses
-            8: Rublos Rusos → Yuan Chino
-            9: Rublos Rusos → Real Brasileño
-            10: Rublos Rusos → Euro
-            11: Dólares Estadounidenses → Pesos Argentinos
-            12: Dólares Estadounidenses → Rublos Rusos
-            13: Dólares Estadounidenses → Yuan Chino
-            14: Dólares Estadounidenses → Real Brasileño
-            15: Dólares Estadounidenses → Euro
-            16: Yuan Chino → Pesos Argentinos
-            17: Yuan Chino → Rublos Rusos
-            18: Yuan Chino → Dólares Estadounidenses
-            19: Yuan Chino → Real Brasileño
-            20: Yuan Chino → Euro
-            21: Real Brasileño → Pesos Argentinos
-            22: Real Brasileño → Rublos Rusos
-            23: Real Brasileño → Dólares Estadounidenses
-            24: Real Brasileño → Yuan Chino
-            25: Real Brasileño → Euro
-            26: Euro → Pesos Argentinos
-            27: Euro → Rublos Rusos
-            28: Euro → Dólares Estadounidenses
-            29: Euro → Yuan Chino
-            30: Euro → Real Brasileño
-            31: Salir
-            """;
+    Seleccione la opción:
+    1: Peso Argentino → Dólar Estadounidense
+    2: Peso Argentino → Real Brasileño
+    3: Peso Argentino → Peso Colombiano
+    4: Peso Argentino → Peso Chileno
+    5: Peso Argentino → Boliviano
+    6: Real Brasileño → Dólar Estadounidense
+    7: Real Brasileño → Peso Argentino
+    8: Real Brasileño → Peso Colombiano
+    9: Real Brasileño → Peso Chileno
+    10: Real Brasileño → Boliviano
+    11: Dólar Estadounidense → Peso Argentino
+    12: Dólar Estadounidense → Real Brasileño
+    13: Dólar Estadounidense → Peso Colombiano
+    14: Dólar Estadounidense → Peso Chileno
+    15: Dólar Estadounidense → Boliviano
+    16: Peso Colombiano → Dólar Estadounidense
+    17: Peso Colombiano → Peso Argentino
+    18: Peso Colombiano → Real Brasileño
+    19: Peso Chileno → Dólar Estadounidense
+    20: Peso Chileno → Peso Argentino
+    21: Boliviano → Dólar Estadounidense
+    22: Boliviano → Peso Argentino
+    23: Salir
+    """;
 
         System.out.println("Ingrese el monto a convertir:");
         monto = scanner.nextDouble();
@@ -84,8 +93,8 @@ public class Main {
                 try {
                     double tasa = conversorService.obtenerTasa(origen, destino);
                     System.out.println("Monto convertido: " + (monto * tasa));
-                } catch (IOException | InterruptedException e) {
-                    System.out.println("Error al obtener la tasa: " + e.getMessage());
+                } catch (ConversorException e) {
+                    System.out.println("Error en la conversión: " + e.getMessage());
                 }
 
             } else if (opcion == pares.length + 1) {
